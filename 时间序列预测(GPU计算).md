@@ -1,3 +1,4 @@
+```
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -127,4 +128,5 @@ for epoch in range(num_epochs):
     # 每10个epoch打印一次损失
     if (epoch + 1) % 10 == 0:
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(dataloader):.4f}')
+```
 
