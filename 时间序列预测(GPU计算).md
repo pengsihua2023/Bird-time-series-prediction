@@ -1,4 +1,5 @@
 ```
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -156,6 +157,37 @@ with torch.no_grad():
         total_loss += loss.item()
     
     print(f'Validation Loss: {total_loss / len(dataloader):.4f}')
+
+# 7. 预测功能
+def predict_bird_illness(model, date, geo, history, image):
+    # Ensure data is in tensor form and move to the device
+    # Check if the data is already a tensor, if not, convert it
+    date_tensor = torch.tensor(date, dtype=torch.float32).to(device) if not isinstance(date, torch.Tensor) else date.to(device)
+    geo_tensor = torch.tensor(geo, dtype=torch.float32).to(device) if not isinstance(geo, torch.Tensor) else geo.to(device)
+    history_tensor = torch.tensor(history, dtype=torch.float32).to(device) if not isinstance(history, torch.Tensor) else history.to(device)
+    image_tensor = image.to(device) if isinstance(image, torch.Tensor) else torch.tensor(image, dtype=torch.float32).to(device)
+    
+    # Ensure model is in evaluation mode
+    model.eval()
+    
+    # No gradient calculation
+    with torch.no_grad():
+        prediction = model(date_tensor.unsqueeze(0), geo_tensor.unsqueeze(0), history_tensor.unsqueeze(0), image_tensor.unsqueeze(0))
+    
+    # Convert the prediction to a scalar value
+    predicted_count = prediction.item()
+    
+    return predicted_count
+
+# 示例输入数据
+date_example = [2024, 10, 22]  # 示例日期
+geo_example = [35.6895, 139.6917]  # 示例经纬度
+history_example = [1, 2, 3, 4, 5, 6, 7]  # 示例历史发病数据
+image_example = torch.randn(3, 224, 224)  # 随机生成一个示例图像
+
+# 调用预测函数
+predicted_illness_count = predict_bird_illness(model, date_example, geo_example, history_example, image_example)
+print("Predicted number of infected birds:", predicted_illness_count)
 
 ```
 
