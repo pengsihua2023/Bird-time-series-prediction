@@ -1,5 +1,4 @@
 ```
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -188,6 +187,5 @@ image_example = torch.randn(3, 224, 224)  # 随机生成一个示例图像
 # 调用预测函数
 predicted_illness_count = predict_bird_illness(model, date_example, geo_example, history_example, image_example)
 print("Predicted number of infected birds:", predicted_illness_count)
-
 ```
 
