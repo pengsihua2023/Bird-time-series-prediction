@@ -94,6 +94,17 @@ class BirdIllnessPredictionModelWithImage(nn.Module):
         predicted_count = self.fc(combined_features)
         return predicted_count
 
+# 3. 数据加载和准备
+dates = [[2024, 10, 22], [2024, 10, 23]]  # 示例日期
+geos = [[35.6895, 139.6917], [34.0522, -118.2437]]  # 示例经纬度
+histories = [[1, 2, 3, 4, 5, 6, 7], [2, 3, 4, 5, 6, 7, 8]]  # 示例历史发病数据
+images = torch.randn(2, 3, 224, 224)  # 示例图像数据
+labels = [8, 6]  # 示例标签
+
+# 创建数据集和数据加载器
+dataset = BirdIllnessDataset(dates, geos, histories, images, labels)
+dataloader = DataLoader(dataset, batch_size=2, shuffle=True)
+
 # 4. 模型实例化、损失函数与优化器
 model = BirdIllnessPredictionModelWithImage(input_size_date=3, input_size_geo=2, input_size_history=7)
 model.to(device)  # 将模型移到GPU
@@ -128,5 +139,23 @@ for epoch in range(num_epochs):
     # 每10个epoch打印一次损失
     if (epoch + 1) % 10 == 0:
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(dataloader):.4f}')
+
+# 6. 验证过程
+model.eval()  # 设置为评估模式
+with torch.no_grad():
+    total_loss = 0.0
+    for batch in dataloader:
+        date_input = batch['date']
+        geo_input = batch['geo']
+        history_input = batch['history']
+        image_input = batch['image']
+        labels = batch['label']
+        
+        outputs = model(date_input, geo_input, history_input, image_input)
+        loss = criterion(outputs, labels.view(-1, 1))
+        total_loss += loss.item()
+    
+    print(f'Validation Loss: {total_loss / len(dataloader):.4f}')
+
 ```
 
